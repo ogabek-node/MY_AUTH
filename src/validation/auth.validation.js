@@ -55,3 +55,24 @@ const loginSchema = Joi.object({
             "any.required": "Parol kiritilishi shart.",
         }),
 });
+
+const forgotPasswordSchema = Joi.object({
+    email: Joi.string().trim().email().required(),
+});
+
+const resetCodeSchema = Joi.object({
+    email: Joi.string().trim().email().required(),
+    code: Joi.string().pattern(/^\d{6}$/).required(),
+});
+
+const resetPasswordSchema = resetCodeSchema.keys({
+    newPassword: Joi.string().pattern(passwordRule).required(),
+});
+
+module.exports = {
+    registerSchema,
+    loginSchema,
+    forgotPasswordSchema,
+    resetCodeSchema,
+    resetPasswordSchema,
+};

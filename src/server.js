@@ -1,14 +1,10 @@
 const express=require("express");
-const {pool,connectDB}=require("./db/index");
+const { connectDB } = require("./db/index");
 
 connectDB()
-const app=express();
-app.use(express.json());
-PORT=process.env.PORT
-
-require("./app")
+const app=require("./app");
+const PORT=process.env.PORT || 3000;
 
 app.listen(PORT,()=>{
     console.log("server ishladi");
 })
-
