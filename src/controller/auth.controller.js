@@ -1,4 +1,4 @@
-const pool=require("../db/index");
+const {pool}=require("../db/index");
 const jwt=require("jsonwebtoken");
 const bcrypt=require("bcrypt");
 
@@ -30,6 +30,10 @@ const register= async (req,res) =>{
 
     }catch(error){
         console.log(error)
+
+        return res.status(500).json({
+            message:"server error "
+        })
     };
 };
 
@@ -56,14 +60,20 @@ const login= async (req,res) =>{
         message:"email yoki password xato"
     })
  }
-  
- return res.status(200).json({
-    message:"login muvaffaqiyatli",
-    user:{
+  const token = jwt.sign(
+    {
         id:user.id,
         username:user.username,
         email:user.email
+    },
+    process.env.JWT_SECRET,
+    {
+        expiresIn:process.env.JWT_EXPIRES_IN
     }
+  );
+ return res.status(200).json({
+    message:"login muvaffaqiyatli",
+    token
  });
   
 
@@ -73,3 +83,8 @@ const login= async (req,res) =>{
             message: "Serverda xatolik"});
     }
 };
+
+module.exports={
+    register,
+    login
+}

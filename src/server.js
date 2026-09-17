@@ -1,14 +1,13 @@
-const express=require("express");
-const {pool,connectDB}=require("./db/index");
+require("dotenv").config();
 
-connectDB()
-const app=express();
-app.use(express.json());
-PORT=process.env.PORT
+const { connectDB } = require("./db/index");
+const app = require("./app");
 
-require("./app")
+const PORT = process.env.PORT || 3001;
 
-app.listen(PORT,()=>{
+connectDB();
+
+app.listen(PORT, () => {
     console.log("server ishladi");
-})
-
+    console.log(`http://localhost:${PORT}/api-docs`);
+});
