@@ -2,6 +2,7 @@ const { pool } = require("../db/index");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -26,7 +27,7 @@ const register = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(password, 10);
         const create = await pool.query(
-            "INSERT INTO users (username,email,password) VALUES ($1,$2,$3) RETURNING id,username,email",
+            "INSERT INTO users (username,email,password) VALUES ($1,$2,$3) RETURNING id,username,email,role",
             [username, email, hashPassword]
         );
 
@@ -53,7 +54,12 @@ const login = async (req, res) => {
         const user = result.rows[0];
         return res.status(200).json({
             message: "login muvaffaqiyatli",
-            user: { id: user.id, username: user.username, email: user.email },
+            token: jwt.sign(
+                { id: user.id, username: user.username, email: user.email, role: user.role },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
+            ),
+            user: { id: user.id, username: user.username, email: user.email, role: user.role },
         });
     } catch (error) {
         console.error("Login vaqtida xatolik:", error);

@@ -10,8 +10,18 @@ const swaggerSpec = swaggerJsdoc({
             description: "Autentifikatsiya va parolni email orqali tiklash API",
         },
         servers: [{ url: "/" }],
-        tags: [{ name: "Auth", description: "Autentifikatsiya endpointlari" }],
+        tags: [
+            { name: "Auth", description: "Autentifikatsiya endpointlari" },
+            { name: "Users", description: "Foydalanuvchilarni boshqarish endpointlari" },
+        ],
         components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
             schemas: {
                 EmailRequest: {
                     type: "object",
@@ -50,6 +60,33 @@ const swaggerSpec = swaggerJsdoc({
                         email: { type: "string", format: "email" },
                         code: { type: "string", pattern: "^\\d{6}$", example: "123456" },
                         newPassword: { type: "string", format: "password", example: "NewStrong@123" },
+                    },
+                },
+                User: {
+                    type: "object",
+                    properties: {
+                        id: { type: "integer", example: 1 },
+                        username: { type: "string", example: "Ali Valiyev" },
+                        email: { type: "string", format: "email", example: "user@example.com" },
+                        role: { type: "string", enum: ["user", "admin"], example: "user" },
+                    },
+                },
+                UserRequest: {
+                    type: "object",
+                    required: ["username", "email", "password"],
+                    properties: {
+                        username: { type: "string", example: "Ali Valiyev" },
+                        email: { type: "string", format: "email", example: "user@example.com" },
+                        password: { type: "string", format: "password", example: "Strong@123" },
+                    },
+                },
+                UserUpdateRequest: {
+                    type: "object",
+                    required: ["username", "email"],
+                    properties: {
+                        username: { type: "string", example: "Ali Valiyev" },
+                        email: { type: "string", format: "email", example: "user@example.com" },
+                        password: { type: "string", format: "password", example: "NewStrong@123" },
                     },
                 },
             },
