@@ -1,51 +1,34 @@
-const express=require("express");
+const express = require("express");
+const {
+    register,
+    login,
+    forgotPassword,
+    verifyResetCode,
+    resetPassword,
+} = require("../controller/auth.controller");
+const {
+    registerSchema,
+    loginSchema,
+    forgotPasswordSchema,
+    resetCodeSchema,
+    resetPasswordSchema,
+} = require("../validation/auth.validation");
 
-const routes=express.Router();
+const router = express.Router();
 
-const {register,login}=require("../controller/auth.controller");
-/**
- * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Yangi user ro'yxatdan o'tkazish
- *     tags:
- *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Register'
- *     responses:
- *       201:
- *         description: Muvaffaqiyatli ro'yxatdan o'tdi
- *       409:
- *         description: Email oldin ro'yxatdan o'tgan
- *       500:
- *         description: Serverda xatolik
- */
-routes.post("/register",register);
-/**
- * @swagger
- * /api/auth/login:
- *   post:
- *     summary: User login
- *     tags:
- *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Login'
- *     responses:
- *       200:
- *         description: Login muvaffaqiyatli
- *       401:
- *         description: Email yoki password xato
- *       500:
- *         description: Serverda xatolik
- */
-routes.post("/login",login);
+const validate = (schema) => (req, res, next) => {
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    req.body = value;
+    next();
+};
 
-module.exports=routes
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/verify-reset-code", validate(resetCodeSchema), verifyResetCode);
+router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
+
+module.exports = router;

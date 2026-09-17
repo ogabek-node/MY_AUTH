@@ -1,13 +1,10 @@
-require("dotenv").config();
-
+const express=require("express");
 const { connectDB } = require("./db/index");
-const app = require("./app");
 
-const PORT = process.env.PORT || 3001;
+connectDB()
+const app=require("./app");
+const PORT=process.env.PORT || 3000;
 
-connectDB();
-
-app.listen(PORT, () => {
+app.listen(PORT,()=>{
     console.log("server ishladi");
-    console.log(`http://localhost:${PORT}/api-docs`);
-});
+})
